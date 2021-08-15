@@ -1,18 +1,19 @@
 package block
 
 import (
-	"time"
 	"crypto/sha256"
+	"encoding/hex"
+	"time"
 )
 
 type Block struct {
-	timestamp time
+	timestamp time.Time
 	lasthash string
 	hash string
-	data []string
+	data []byte
 }
 var block Block
-func New(timestamp time, lastHash string, hash string, data []string ) (*Block, error){
+func New(timestamp time.Time, lastHash string, hash string, data []byte ) (*Block, error){
 	block := &Block{
 		timestamp: timestamp,
 		lasthash: lastHash,
@@ -22,11 +23,11 @@ func New(timestamp time, lastHash string, hash string, data []string ) (*Block, 
 	return block,nil
 }
 
-func (b *Block) Data() ([]string){
+func (b *Block) Data() ([]byte){
 	return b.data
 }
 
-func (b *Block) Timestamp() string {
+func (b *Block) Timestamp() time.Time {
 	return b.timestamp
 }
 
@@ -42,12 +43,13 @@ func GetBlock() (*Block){
 	return &block;
 }
 
-func (b *Block )MineBlock(data []string) (*Block){
+func (b *Block )MineBlock(data []byte) (*Block){
+	hash := sha256.Sum256(data)
 	block := Block{
 		timestamp: time.Now(),
 		lasthash: b.lasthash,
-		hash: b.hash + "abc",
-		data: data
+		hash: hex.EncodeToString(hash[:]),
+		data: data,
 	}
 	return &block
 }
