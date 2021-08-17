@@ -1,22 +1,26 @@
 package config
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
+	"bl/utils"
 	"time"
 )
 
 type Config struct {
-	Timestamp time.Time
+	Timestamp string
 	LastHash string
 	Hash string
 	Data []byte
 }
 
 func Genesis() ( *Config){
-	initHash := sha256.Sum256([]byte("init-block"))
-	lastHash := sha256.Sum256([]byte("-----"))
+
+	date := "Tue, 17 Aug 2021 08:44:22 +07"
+	timestamp, _ := time.Parse(time.RFC1123, date)
+	lastHash := utils.CryptoHash([]byte("-----"))
 	data := []byte("")
-	config := &Config{Timestamp: time.Now(), LastHash: hex.EncodeToString(lastHash[:]), Hash: hex.EncodeToString(initHash[:]),Data: data}
+	initHash := utils.CryptoHash([]byte(timestamp.String()),[]byte(lastHash),data)
+	config := &Config{Timestamp: timestamp.String(), LastHash:lastHash, Hash: initHash,Data: data}
+
+
 	return config
 }

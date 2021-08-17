@@ -1,23 +1,22 @@
 package block
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
+	"bl/utils"
 	"time"
 )
 
 type Block struct {
-	timestamp time.Time
+	timestamp string
 	lasthash string
 	hash string
 	data []byte
 }
 var block Block
-func New(timestamp time.Time, lastHash string, hash string, data []byte ) (*Block, error){
+func New(timestamp string, lastHash string, hash string, data []byte ) (*Block, error){
 	block := &Block{
 		timestamp: timestamp,
 		lasthash: lastHash,
-		hash: hash,
+		hash: utils.CryptoHash([]byte(timestamp),[]byte(lastHash),data),
 		data: data,
 	}
 	return block,nil
@@ -27,16 +26,32 @@ func (b *Block) Data() ([]byte){
 	return b.data
 }
 
-func (b *Block) Timestamp() time.Time {
+func (b *Block) SetData(data []byte){
+	b.data = data
+}
+
+func (b *Block) Timestamp() string {
 	return b.timestamp
+}
+
+func (b *Block) SetTimestamp(timestamp string){
+	b.timestamp = timestamp
 }
 
 func (b *Block) Hash() string {
 	return b.hash
 }
 
+func (b *Block) SetHash(hash string) {
+	b.hash = hash
+}
+
 func (b *Block) LastHash() string {
 	return b.lasthash
+}
+
+func (b *Block) SetLastHast(lasthash string){
+	b.lasthash = lasthash
 }
 
 func GetBlock() (*Block){
@@ -44,12 +59,12 @@ func GetBlock() (*Block){
 }
 
 func (b *Block )MineBlock(data []byte) (*Block){
-	hash := sha256.Sum256(data)
-	block := Block{
-		timestamp: time.Now(),
-		lasthash: b.lasthash,
-		hash: hex.EncodeToString(hash[:]),
+	timestamp := time.Now().Format(time.RFC1123)
+	bl := Block{
+		timestamp: timestamp,
+		lasthash: b.hash,
+		hash: utils.CryptoHash([]byte(timestamp),[]byte(b.hash),data),
 		data: data,
 	}
-	return &block
+	return &bl
 }

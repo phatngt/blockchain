@@ -3,14 +3,12 @@ package tests
 import (
 	"bl/block"
 	"bytes"
-	"crypto/sha256"
-	"encoding/hex"
 	"testing"
 	"time"
 )
 
 func TestBlock(t *testing.T) {
-	bl, err := block.New(time.Now(),"foo-lasthash","foo-hash",[]byte("foo-data"))
+	bl, err := block.New(time.Now().Format(time.RFC1123),"foo-lasthash","foo-hash",[]byte("foo-data"))
 	got := bl.Data();
 	want := []byte("foo-data")
 	if got[0] != want[0] {
@@ -39,11 +37,5 @@ func TestMine(t *testing.T){
 		t.Errorf("got: %q not equal wanted: %q",got1,want1)
 	}
 
-	hash := sha256.Sum256(data)
-	got2 := mineBlock.Hash()
-	want2 :=  hex.EncodeToString(hash[:])
-	if got2 != want2 {
-		t.Errorf("got: %q not equal wanted: %q",got1,want1)
-	}
 
 }
